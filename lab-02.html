@@ -9,9 +9,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Team Name: User1, User2, User3 and User4" />
+<meta name="author" content="Team Name: Una, Eve, Emma and Greatness" />
 
-<meta name="date" content="2023-10-03" />
+<meta name="date" content="2023-10-09" />
 
 <title>Lab 02 - Global plastic waste</title>
 
@@ -351,8 +351,8 @@ display: none;
 
 
 <h1 class="title toc-ignore">Lab 02 - Global plastic waste</h1>
-<h4 class="author">Team Name: User1, User2, User3 and User4</h4>
-<h4 class="date">2023-10-03</h4>
+<h4 class="author">Team Name: Una, Eve, Emma and Greatness</h4>
+<h4 class="date">2023-10-09</h4>
 
 </div>
 
@@ -366,49 +366,147 @@ library(readxl)</code></pre>
 <h2>Load &amp; join data sets</h2>
 <pre class="r"><code># Member 1 write code to load File 1 data here:
 
-
+data1 &lt;- read_csv(&quot;data/mismanaged-plastic-waste-per-capita.csv&quot;)
 
 # Member 2 write code to load File 2 data here:
 
-
-
-# Member 3 write code to load File 3 data here:
+data2 &lt;- read_csv2(&quot;data/per-capita-ocean-plastic-waste.txt&quot;)
 
 
 
-# Member 4 write code to load File 4 data here:</code></pre>
+# Member 3 write code to load File 3 data here: 
+
+data3 &lt;- read_tsv(&quot;data/UN_country_population.tsv&quot;)
+
+
+
+# Member 4 write code to load File 4 data here:
+
+data4 &lt;- read_excel(&quot;data/UN_country_region.xlsx&quot;)</code></pre>
 <pre class="r"><code># Member 1 write code to create object &#39;plastic_data_all&#39;:
 
-
+plastic_data_all &lt;- data1
 
 # Member 2 write code to join your data to &#39;plastic_data_all&#39;:
 
+plastic_data_all &lt;- data2 %&gt;%
+  select(-name) %&gt;%
+  left_join(plastic_data_all, by = &quot;code&quot;)
 
 
 # Member 3 write code to join your data to &#39;plastic_data_all&#39;:
+plastic_data_all &lt;- data3 %&gt;%
+  select(-name) %&gt;%
+  right_join(plastic_data_all, by = &quot;code&quot;)
 
 
 
-# Member 4 write code to join your data to &#39;plastic_data_all&#39;:</code></pre>
-<pre class="r"><code># Member 1 adds code here to view the first 10 rows of &#39;plastic_data_all&#39;</code></pre>
+# Member 4 write code to join your data to &#39;plastic_data_all&#39;:
+plastic_data_all &lt;- data4 %&gt;%
+  select(-name) %&gt;%
+  right_join(plastic_data_all, by = &quot;code&quot;)</code></pre>
+<pre class="r"><code># Member 1 adds code here to view the first 10 rows of &#39;plastic_data_all&#39;
+plastic_data_all %&gt;% head(n=10)</code></pre>
+<pre><code>## # A tibble: 10 × 6
+##    code  region       population mismanaged_plastic_o…¹ name  mismanaged_plastic
+##    &lt;chr&gt; &lt;chr&gt;             &lt;dbl&gt;                  &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt;
+##  1 AGO   Africa          31808.                 0.0270  Ango…              7.45 
+##  2 ALB   Europe           2876.                 0.543   Alba…             24.2  
+##  3 ARE   Asia             9176.                 0.00143 Unit…              0.526
+##  4 ARG   Latin Ameri…    44583.                 0.0924  Arge…             10.4  
+##  5 ATG   Latin Ameri…       91.9                0.0206  Anti…              6.46 
+##  6 AUS   Oceania         25170.                 0.00127 Aust…              0.209
+##  7 BEL   Europe          11480.                 0.00295 Belg…              0.198
+##  8 BEN   Africa          12114.                 0.139   Benin             11.3  
+##  9 BFA   Africa          20671.                 0       Burk…             15.6  
+## 10 BGD   Asia           164605.                 0.151   Bang…              6.27 
+## # ℹ abbreviated name: ¹​mismanaged_plastic_ocean</code></pre>
 </div>
 <div id="exercises" class="section level2">
 <h2>Exercises</h2>
 <div id="ex-1." class="section level3">
 <h3>Ex 1.</h3>
-<pre class="r"><code># Write your code here to answer exercise 1</code></pre>
+<pre class="r"><code># Write your code here to answer exercise 1
+plastic_data_all %&gt;% 
+  count(region, sort = TRUE)</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   region                              n
+##   &lt;chr&gt;                           &lt;int&gt;
+## 1 Africa                             43
+## 2 Asia                               39
+## 3 Latin America and The Caribbean    34
+## 4 Europe                             31
+## 5 Oceania                            10
+## 6 North America                       2</code></pre>
 </div>
 <div id="ex-2." class="section level3">
 <h3>Ex 2.</h3>
-<pre class="r"><code># Write your code here to answer exercise 2</code></pre>
+<pre class="r"><code># Write your code here to answer exercise 2
+plastic_data_all &lt;- plastic_data_all %&gt;%
+  mutate(total_mismanaged_plastic = mismanaged_plastic * population)
+
+plastic_data_all %&gt;% 
+  group_by(region) %&gt;%
+  summarise(avg_total = mean(total_mismanaged_plastic))</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   region                          avg_total
+##   &lt;chr&gt;                               &lt;dbl&gt;
+## 1 Africa                            320729.
+## 2 Asia                             1026059.
+## 3 Europe                             38180.
+## 4 Latin America and The Caribbean   193450.
+## 5 North America                     147190.
+## 6 Oceania                            14577.</code></pre>
 </div>
 <div id="ex-3." class="section level3">
 <h3>Ex 3.</h3>
-<pre class="r"><code># Write your code here to answer exercise 3</code></pre>
+<pre class="r"><code># Write your code here to answer exercise 3
+plastic_data_all &lt;- plastic_data_all %&gt;%
+  mutate(pct_mismanaged_plastic_ocean = mismanaged_plastic_ocean / mismanaged_plastic)
+
+plastic_data_all %&gt;% 
+  group_by(region) %&gt;%
+  summarise(med_pct = median(pct_mismanaged_plastic_ocean))</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   region                           med_pct
+##   &lt;chr&gt;                              &lt;dbl&gt;
+## 1 Africa                          NA      
+## 2 Asia                             0.00974
+## 3 Europe                           0.00846
+## 4 Latin America and The Caribbean  0.0307 
+## 5 North America                    0.00959
+## 6 Oceania                          0.0158</code></pre>
 </div>
 <div id="ex-4." class="section level3">
 <h3>Ex 4.</h3>
-<pre class="r"><code># Write your code here to answer exercise 4</code></pre>
+<pre class="r"><code># Write your code here to answer exercise 4
+plastic_data_all &lt;- plastic_data_all %&gt;%
+  rename(
+    pop = population,
+    ocean_plastic = mismanaged_plastic_ocean,
+    mismanaged = mismanaged_plastic,
+    tot_plastic = total_mismanaged_plastic,
+    pct_ocean = pct_mismanaged_plastic_ocean
+  )
+
+
+plastic_data_all &lt;- plastic_data_all %&gt;%
+  mutate(region = str_replace_all(region, &quot;Latin America and The Caribbean&quot;, &quot;LAC&quot;))
+
+plastic_data_all %&gt;% head(n = 10)</code></pre>
+<pre><code>## # A tibble: 10 × 8
+##    code  region       pop ocean_plastic name    mismanaged tot_plastic pct_ocean
+##    &lt;chr&gt; &lt;chr&gt;      &lt;dbl&gt;         &lt;dbl&gt; &lt;chr&gt;        &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+##  1 AGO   Africa   31808.        0.0270  Angola       7.45      236821.   0.00363
+##  2 ALB   Europe    2876.        0.543   Albania     24.2        69703.   0.0224 
+##  3 ARE   Asia      9176.        0.00143 United…      0.526       4822.   0.00273
+##  4 ARG   LAC      44583.        0.0924  Argent…     10.4       463744.   0.00888
+##  5 ATG   LAC         91.9       0.0206  Antigu…      6.46         594.   0.00319
+##  6 AUS   Oceania  25170.        0.00127 Austra…      0.209       5259.   0.00608
+##  7 BEL   Europe   11480.        0.00295 Belgium      0.198       2272.   0.0149 
+##  8 BEN   Africa   12114.        0.139   Benin       11.3       136872.   0.0123 
+##  9 BFA   Africa   20671.        0       Burkin…     15.6       322769.   0      
+## 10 BGD   Asia    164605.        0.151   Bangla…      6.27     1031765.   0.0241</code></pre>
 </div>
 </div>
 

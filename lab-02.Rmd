@@ -1,6 +1,6 @@
 ---
 title: "Lab 02 - Global plastic waste"
-author: "Team Name: Una, Eve, Emma and User4"
+author: "Team Name: Una, Eve, Emma and Greatness"
 date: "`r Sys.Date()`"
 output: html_document
 ---
@@ -34,7 +34,7 @@ data3 <- read_tsv("data/UN_country_population.tsv")
 
 # Member 4 write code to load File 4 data here:
 
-
+data4 <- read_excel("data/UN_country_region.xlsx")
 
 ```
 
@@ -60,7 +60,9 @@ plastic_data_all <- data3 %>%
 
 
 # Member 4 write code to join your data to 'plastic_data_all':
-
+plastic_data_all <- data4 %>%
+  select(-name) %>%
+  right_join(plastic_data_all, by = "code")
 
 
 ```
@@ -81,6 +83,8 @@ plastic_data_all %>% head(n=10)
 
 ```{r Ex1, message = FALSE}
 # Write your code here to answer exercise 1
+plastic_data_all %>% 
+  count(region, sort = TRUE)
 
 
 
@@ -92,7 +96,12 @@ plastic_data_all %>% head(n=10)
 
 ```{r Ex2, message = FALSE}
 # Write your code here to answer exercise 2
+plastic_data_all <- plastic_data_all %>%
+  mutate(total_mismanaged_plastic = mismanaged_plastic * population)
 
+plastic_data_all %>% 
+  group_by(region) %>%
+  summarise(avg_total = mean(total_mismanaged_plastic))
 
 
 ```
@@ -102,7 +111,12 @@ plastic_data_all %>% head(n=10)
 
 ```{r Ex3, message = FALSE}
 # Write your code here to answer exercise 3
+plastic_data_all <- plastic_data_all %>%
+  mutate(pct_mismanaged_plastic_ocean = mismanaged_plastic_ocean / mismanaged_plastic)
 
+plastic_data_all %>% 
+  group_by(region) %>%
+  summarise(med_pct = median(pct_mismanaged_plastic_ocean))
 
 
 ```
@@ -112,7 +126,20 @@ plastic_data_all %>% head(n=10)
 
 ```{r Ex4, message = FALSE}
 # Write your code here to answer exercise 4
+plastic_data_all <- plastic_data_all %>%
+  rename(
+    pop = population,
+    ocean_plastic = mismanaged_plastic_ocean,
+    mismanaged = mismanaged_plastic,
+    tot_plastic = total_mismanaged_plastic,
+    pct_ocean = pct_mismanaged_plastic_ocean
+  )
 
+
+plastic_data_all <- plastic_data_all %>%
+  mutate(region = str_replace_all(region, "Latin America and The Caribbean", "LAC"))
+
+plastic_data_all %>% head(n = 10)
 
 
 ```
